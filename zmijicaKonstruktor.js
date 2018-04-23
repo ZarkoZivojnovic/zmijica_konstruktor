@@ -29,27 +29,27 @@ IgricaZmijica.prototype.daLiJeUdarilaZid = function () {
     return  pozicijaGlaveHorizontalno < 0 || pozicijaGlaveHorizontalno > this.sirinaTabele-1 || pozicijaGlaveVertikalno < 0 || pozicijaGlaveVertikalno > this.visinaTabele-1;
 };
 
-IgricaZmijica.prototype.kretanje = function (trenutniSmer, zmija) {
-    var vertikala = zmija[0][0],
-        horizontala = zmija[0][1];
+IgricaZmijica.prototype.kretanje = function () {
+    var vertikala = this.zmija[0][0],
+        horizontala = this.zmija[0][1];
 
-    if (pauzirano == true) {
-        return zmija;
+    if (this.pauzirano == true) {
+        return this.zmija;
     } else {
-        if (trenutniSmer == "levo") {
-            zmija.unshift([vertikala, horizontala - 1]);
+        if (this.trenutniSmer == "levo") {
+            this.zmija.unshift([vertikala, horizontala - 1]);
         }
-        if (trenutniSmer == "desno") {
-            zmija.unshift([vertikala, horizontala + 1]);
+        if (this.trenutniSmer == "desno") {
+            this.zmija.unshift([vertikala, horizontala + 1]);
         }
-        if (trenutniSmer == "gore") {
-            zmija.unshift([vertikala - 1, horizontala]);
+        if (this.trenutniSmer == "gore") {
+            this.zmija.unshift([vertikala - 1, horizontala]);
         }
-        if (trenutniSmer == "dole") {
-            zmija.unshift([vertikala + 1, horizontala]);
+        if (this.trenutniSmer == "dole") {
+            this.zmija.unshift([vertikala + 1, horizontala]);
         }
-        zmija.pop();
-        return zmija;
+        this.zmija.pop();
+        return this.zmija;
     }
 };
 
@@ -76,7 +76,7 @@ IgricaZmijica.prototype.pokreniIgru = function () {
             this.trenutniSmer = "desno";
             this.smer = this.trenutniSmer;
         } else {
-            this.zmija = this.kretanje(this.trenutniSmer, this.zmija);
+            this.zmija = this.kretanje();
         }
         this.postaviZmijuNaTabelu();
         this.ispisNaStranici(this.tabela, 20);
@@ -163,7 +163,7 @@ IgricaZmijica.prototype.daLiJePojela = function () {
 };
 
 IgricaZmijica.prototype.povecajZmijicu = function () {
-    this.zmija.push(food);
+    this.zmija.push(this.food);
 };
 
 IgricaZmijica.prototype.promeniSmer = function (event) {
