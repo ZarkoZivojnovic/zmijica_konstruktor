@@ -1,35 +1,27 @@
 var IgricaZmijica = function () {
-        this.visinaTabele = 5;
-        this.sirinaTabele = 15;
-        this.pocetnaPozicija = [[1, 3], [1, 2], [1, 1]];
-        this.zmija = this.pocetnaPozicija;
-        this.trenutniSmer = 'desno';
-        this.smer = this.trenutniSmer;
-        this.pauzirano = "false";
-        this.tabela = [];
-        this.food = [];
-        this.poeni = 0;
-        this.vreme = 0;
-        this.zivoti = 3;
-        this.praznoPolje = 0;
-        this.zmijica = 1;
-        this.hrana = 2;
-        this.pokreniZmiju=0;
-        this.pokreniVreme=0;
+    this.visinaTabele = 5;
+    this.sirinaTabele = 15;
+    this.zmija = [[1, 3], [1, 2], [1, 1]];
+    this.trenutniSmer = 'desno';
+    this.smer = "desno";
+    this.pauzirano = false;
+    this.tabela = [];
+    this.food = [];
+    this.poeni = 0;
+    this.vreme = 0;
+    this.zivoti = 3;
+    this.praznoPolje = 0;
+    this.zmijica = 1;
+    this.hrana = 2;
+    this.pokreniZmiju = 0;
+    this.pokreniVreme = 0;
 };
 
 IgricaZmijica.prototype.postaviZmijuNaTabelu = function () {
     for (var deoZmije = 0; deoZmije < this.zmija.length; deoZmije++) {
-        var tabelaX=this.zmija[deoZmije][0];
-        var tabelaY=this.zmija[deoZmije][1];
-        if(tabelaX==-1 || tabelaY==-1){// udarila u zid
-            this.smanjiZivote();
-            this.zmija = this.pocetnaPozicija;
-            this.trenutniSmer = "desno";
-            this.smer = this.trenutniSmer;
-        }else{
-            this.tabela[tabelaX][tabelaY] = this.zmijica;
-        }
+        var tabelaX = this.zmija[deoZmije][0];
+        var tabelaY = this.zmija[deoZmije][1];
+        this.tabela[tabelaX][tabelaY] = this.zmijica;
     }
     return this.tabela;
 };
@@ -37,17 +29,15 @@ IgricaZmijica.prototype.postaviZmijuNaTabelu = function () {
 IgricaZmijica.prototype.daLiJeUdarilaZid = function () {
     var pozicijaGlaveVertikalno = this.zmija[0][0];
     var pozicijaGlaveHorizontalno = this.zmija[0][1];
-    return  pozicijaGlaveHorizontalno < 0 || pozicijaGlaveHorizontalno > this.sirinaTabele-1 || pozicijaGlaveVertikalno < 0 || pozicijaGlaveVertikalno > this.visinaTabele-1;
+    return pozicijaGlaveHorizontalno < 0 || pozicijaGlaveHorizontalno > this.sirinaTabele - 1 || pozicijaGlaveVertikalno < 0 || pozicijaGlaveVertikalno > this.visinaTabele - 1;
 };
 
 IgricaZmijica.prototype.kretanje = function () {
-    if(!this.zmija)return;
-    if(!this.trenutniSmer)return;
-    var zmija=this.zmija;
-    var trenutniSmer=this.trenutniSmer;
+    var zmija = this.zmija;
+    var trenutniSmer = this.trenutniSmer;
     var vertikala = zmija[0][0],
         horizontala = zmija[0][1];
-    if (this.pauzirano == true) {
+    if (this.pauzirano) {
         return zmija;
     } else {
         if (trenutniSmer == "levo") {
@@ -69,7 +59,7 @@ IgricaZmijica.prototype.kretanje = function () {
 
 IgricaZmijica.prototype.daLiJePreslaPrekoSebe = function () {
     //bug - ne proverava poslednji element niza zato sto kada (daLiJePojela() == true) vraca true.
-    for (var i = 3; i < this.zmija.length-1; i++) {
+    for (var i = 3; i < this.zmija.length - 1; i++) {
         if (this.zmija[0].toString() == this.zmija[i].toString()) {
             console.log("presla preko sebe");
             return true;
@@ -77,23 +67,26 @@ IgricaZmijica.prototype.daLiJePreslaPrekoSebe = function () {
     }
 };
 
-IgricaZmijica.prototype.pokreciZmiju=function () {
+IgricaZmijica.prototype.pokreciZmiju = function () {
     this.nacrtajIgru();
     this.tabela[this.food[0]][this.food[1]] = this.hrana;
     this.trenutniSmer = this.smer;
     if (this.daLiJePreslaPrekoSebe() || this.daLiJeUdarilaZid()) {
         this.smanjiZivote();
-        this.zmija = this.pocetnaPozicija;
-        this.trenutniSmer = "desno";
-        this.smer = this.trenutniSmer;
+        this.zmija = [[1, 3], [1, 2], [1, 1]];
+        this.trenutniSmer = 'desno';
+        this.smer = "desno";
     } else {
         this.zmija = this.kretanje();
     }
-
     this.postaviZmijuNaTabelu();
     this.ispisNaStranici(this.tabela, 20);
     this.daLiJePojela();
     this.azurirajStatuse();
+};
+
+IgricaZmijica.prototype.pokreciVreme = function () {
+    if (!this.pauzirano) this.vreme++;
 };
 
 IgricaZmijica.prototype.pokreniIgru = function () {
@@ -101,9 +94,7 @@ IgricaZmijica.prototype.pokreniIgru = function () {
     this.postaviHranu();
     // this.pokreniZmiju = setInterval(()=>this.pokreciZmiju(), 500);
     this.pokreniZmiju = setInterval(this.pokreciZmiju.bind(this), 500);
-    this.pokreniVreme = setInterval(function () {
-        if (!this.pauzirano) this.vreme++;
-    }, 1000);
+    this.pokreniVreme = setInterval(this.pokreciVreme.bind(this), 1000);
 
 };
 IgricaZmijica.prototype.pauzirajIgru = function (event) {
@@ -200,18 +191,17 @@ IgricaZmijica.prototype.promeniSmer = function (event) {
         if (this.trenutniSmer != 'gore') {
             this.smer = 'dole';
         }
-    } 
+    }
 };
 
 IgricaZmijica.prototype.smanjiZivote = function (int1, int2) {
-    if (this.zivoti == 1){
+    if (this.zivoti == 1) {
         this.prekiniIgru(int1, int2);
-    }else{
+    } else {
         this.zivoti--;
         this.azurirajStatuse();
     }
 };
-
 
 IgricaZmijica.prototype.azurirajStatuse = function () {
     var statusi = ">> Poeni: <span>" + this.poeni + "</span> << || >> Vreme: <span>" + this.vreme + "</span> sec << || >> Zivoti: <span>" + this.zivoti + "</span> <<";
@@ -219,17 +209,17 @@ IgricaZmijica.prototype.azurirajStatuse = function () {
 };
 
 IgricaZmijica.prototype.pustiZvukJednom = function (parametar) {
-    oneSound = new Audio(parametar);
+    var oneSound = new Audio(parametar);
     oneSound.play();
 };
-IgricaZmijica.prototype.initEvents=function(){
+
+IgricaZmijica.prototype.initEvents = function () {
     // document.body.addEventListener("keydown", (event)=>this.promeniSmer(event));
     document.body.addEventListener("keydown", this.promeniSmer.bind(this));
     document.body.addEventListener("keydown", this.pauzirajIgru.bind(this));
 };
 
 var igricaZmijica = new IgricaZmijica();
-
-igricaZmijica.nacrtajIgru();
 igricaZmijica.initEvents();
+igricaZmijica.nacrtajIgru();
 igricaZmijica.pokreniIgru();
